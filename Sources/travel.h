@@ -7,6 +7,7 @@ struct Travel {
 	char attraction[100];
 	char food[100];
 	char climate[50];
+	char type[50];
 };
 
 void showTravel(const struct Travel* travel);
