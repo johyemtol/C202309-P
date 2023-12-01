@@ -15,7 +15,10 @@ void showTravel(const struct Travel* travel) {
 		}
 	}
 	printf("\n");
+	printf("코멘트: %s\n", travel->comment);
+	printf("평점: %d\n", travel->rating);
 }
+
 int checkMatch(const char(*userPreferences)[50], const struct Travel* travel) {
 	int matchCount = 0;
 	for (int i = 0; i < 3; ++i) {
@@ -28,3 +31,18 @@ int checkMatch(const char(*userPreferences)[50], const struct Travel* travel) {
 	}
 	return matchCount;
 }
+
+//이름 또는 취향이 입력 되어있을때의 여행지를 출력하기 위한 함수
+void searchTravel(const char* searchQuery, struct Travel* travelList, int listSize, int matchingIndices[], int* matchingCount) {
+	*matchingCount = 0;
+
+	for (int i = 0; i < listSize; ++i) {
+		if (strstr(travelList[i].name, searchQuery) != NULL ||
+			strstr(travelList[i].location, searchQuery) != NULL ||
+			checkMatch(&searchQuery, &travelList[i]) > 0) {
+			matchingIndices[*matchingCount] = i;
+			(*matchingCount)++;
+		}
+	}
+}
+
