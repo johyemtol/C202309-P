@@ -1,16 +1,16 @@
 #include "travel.h"
 
 int main() {
-    //무작위로 구성, 나중에 여행지 추가하는 코드도 추가할 고민중
     struct Travel travel[5] = {
-        {"서울a","아시아 한국","경복궁, ","비빔밥, 김치","사계절",{"휴식","자연","음식"}, "", 0},
-        {"bs울","아시아 한국","경복궁, ","비빔밥, 김치","사계절",{"관광","도시","문화"}, "", 0},
-        {"ce울","아시아 한국","경복궁, ","비빔밥, 김치","사계절",{"휴식","음식","자연"}, "", 0},
-        {"df울","아시아 한국","경복궁, ","비빔밥, 김치","사계절",{"관광","문화","날씨"}, "", 0},
-        {"ea울","아시아 한국","경복궁, ","비빔밥, 김치","사계절",{"휴식","건물","휴식"}, "", 0},
+        {"서울","아시아 한국","경복궁, 서울타워","비빔밥, 김치","사계절",{"도시","역사","음식"}, "매우 아름다움", 3},
+        {"파리","유럽 프랑스","에펠탑, 루브르 박물관 ","뵈프 부르기뇽, 달팽이","온화함",{"관광","도시","문화"}, "예술의 도시", 4},
+        {"런던","유럽 영국","타워 브리지, 버킹엄 궁전 ","피시 앤 칩스, 잉글리쉬 브랙퍼스트","사계절이지만 변덕스러움 우산챙기고 다녀야함",{"휴식","관광","자연"}, "", 3},
+        {"캔버라","오스트레일리아 호주","국립도서관 ","캥고루 고기, 미트파이","온화함",{"관광","문화","날씨"}, "", 0},
+        {"워싱턴 d.c","아메리카 미국","링컨 기념관, 백악관","스테이크, 버거","사계절",{"관광","건물","도시"}, "화려함", 4},
+        //지금은 5개밖에 없지만 더 추가할 예정
     };
 
-    printf("검색어를 입력하세요:(나라, 이름, 대륙) ");
+    printf("검색어를 입력하세요: ");
     char searchQuery[50];
     scanf_s("%s", searchQuery, sizeof(searchQuery));
 
@@ -19,7 +19,6 @@ int main() {
 
     searchTravel(searchQuery, travel, 5, matchingIndices, &matchingCount);
 
-    //검색하였을때 검색 결과에 알맞은 여행지가 있더라면
     if (matchingCount > 0) {
         printf("검색 결과로 나온 여행지입니다:\n");
         for (int i = 0; i < matchingCount; ++i) {
@@ -27,7 +26,6 @@ int main() {
             showTravel(&travel[matchingIndices[i]]);
         }
 
-        //선택된 여행지 중 여행지 선택 혹은 평점 코멘트 입력할 수 있게 설정
         printf("메뉴를 선택하세요:\n");
         printf("1. 여행지 선택\n");
         printf("2. 여행지 평점 및 코멘트 입력\n");
@@ -35,7 +33,6 @@ int main() {
         int menuChoice;
         scanf_s("%d", &menuChoice);
 
-        //여행지 선택
         if (menuChoice == 1) {
             printf("어떤 여행지를 선택하시겠습니까? (번호로 선택하시오): ");
             int choice;
@@ -44,22 +41,42 @@ int main() {
             if (choice >= 1 && choice <= matchingCount) {
                 printf("선택하신 여행지:\n");
                 showTravel(&travel[matchingIndices[choice - 1]]);
-                // 이어서 관광지와 추천 말하기
+                printf("\n선택하신 여행지에서 숙소나 일정을 알아봐 드릴까요?\n");
+                printf("1. 네 연결해주세요\n");
+                printf("2. 아니요 연결해주지 마세요\n");
+                int planChoice;
+                scanf_s("%d", &planChoice);
+                if (planChoice == 1) {
+                    printf("사이트와 연결하는 중입니다...\n");
+
+                    //나중에 웹사이트와 연결하여 숙소나 일정 잡을수 있게 함
+                }
+                else if (planChoice == 2) {
+                    printf("다른 여행지를 탐색해 보세요\n");
+                }
+
             }
             else {
                 printf("잘못된 선택입니다.");
             }
         }
-        //여행지 평점 및 코멘트 입력
         else if (menuChoice == 2) {
             printf("평점과 코멘트를 입력할 여행지를 선택하세요 (번호로 선택하시오): ");
             int choice;
             scanf_s("%d", &choice);
 
-            //평점과 코멘트 입력하는 코드
             if (choice >= 1 && choice <= matchingCount) {
                 printf("평점을 입력하세요 (0~5): ");
-                scanf_s("%d", &travel[matchingIndices[choice - 1]].rating);
+                int newRating;
+                scanf_s("%d", &newRating);
+
+                // Calculate the new average rating
+                int totalRatings = travel[matchingIndices[choice - 1]].rating * travel[matchingIndices[choice - 1]].numReviews;
+                totalRatings += newRating;
+                travel[matchingIndices[choice - 1]].numReviews++;
+                travel[matchingIndices[choice - 1]].rating = totalRatings / travel[matchingIndices[choice - 1]].numReviews;
+
+                printf("평균 평점: %d\n", travel[matchingIndices[choice - 1]].rating);
 
                 printf("코멘트를 입력하세요: ");
                 scanf_s(" %[^\n]s", travel[matchingIndices[choice - 1]].comment, sizeof(travel[matchingIndices[choice - 1]].comment));
@@ -74,7 +91,6 @@ int main() {
             printf("잘못된 선택입니다.");
         }
     }
-    //검색했을때 알맞은 검색어가 없을때
     else {
         printf("해당하는 여행지가 없습니다.");
     }
