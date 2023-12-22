@@ -18,3 +18,8 @@ struct Travel {
 void showTravel(const struct Travel* travel);
 int checkMatch(const char(*userPreferences)[50], const struct Travel* travel);
 void searchTravel(const char* searchQuery, struct Travel* travelList, int listSize, int matchingIndices[], int* matchingCount);
+double calculateAverageRating(const struct Travel* travel);
+void sortAverageRating(struct Travel* travelList, int listSize);
+void performSearch(struct Travel* travel, int travelCount);
+void selectTravel(struct Travel* travel, int travelCount, int matchingIndices[], int matchingCount);
+void inputRatingAndComment(struct Travel* travel, int travelCount, int matchingIndices[], int matchingCount);
