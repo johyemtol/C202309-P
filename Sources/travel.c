@@ -1,6 +1,8 @@
 #include "travel.h"
 #include <string.h>
 
+
+
 void showTravel(const struct Travel* travel) {
     printf("여행지 \n");
     printf("이름: %s\n", travel->name);
@@ -20,16 +22,20 @@ void showTravel(const struct Travel* travel) {
 
 int checkMatch(const char(*userPreferences)[50], const struct Travel* travel) {
     int matchCount = 0;
+
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (strcmp(travel->type[i], userPreferences[j]) == 0) {
                 matchCount++;
-                break;
+                break;   
             }
         }
     }
-    return matchCount;
+
+    return (matchCount == 3);
 }
+
+
 
 void searchTravel(const char* searchQuery, struct Travel* travelList, int listSize, int matchingIndices[], int* matchingCount) {
     *matchingCount = 0;
@@ -50,6 +56,8 @@ double calculateAverageRating(const struct Travel* travel) {
     return (double)travel->rating / travel->numReviews;
 }
 
+
+
 void sortAverageRating(struct Travel* travelList, int listSize) {
     for (int i = 0; i < listSize - 1; ++i) {
         for (int j = i + 1; j < listSize; ++j) {
@@ -65,23 +73,51 @@ void sortAverageRating(struct Travel* travelList, int listSize) {
     }
 }
 
+void sortTravelRating(struct Travel* travelList, int listSize) {
+    for (int i = 0; i < listSize - 1; ++i) {
+        for (int j = i + 1; j < listSize; ++j) {
+            double avgRatingI = calculateAverageRating(&travelList[i]);
+            double avgRatingJ = calculateAverageRating(&travelList[j]);
+
+            if (avgRatingI < avgRatingJ) {
+                struct Travel temp = travelList[i];
+                travelList[i] = travelList[j];
+                travelList[j] = temp;
+            }
+        }
+    }
+}
+
 void performSearch(struct Travel* travel, int travelCount) {
-    printf("검색어를 입력하세요: ");
+    printf("검색어를 입력하세요(도시나 나라 대륙 이름을 입력하시오): ");
     char searchQuery[50];
     scanf_s("%s", searchQuery, sizeof(searchQuery));
 
     int matchingIndices[5] = { 0 };
     int matchingCount = 0;
-
     searchTravel(searchQuery, travel, travelCount, matchingIndices, &matchingCount);
 
+
     if (matchingCount > 0) {
-        printf("검색 결과로 나온 여행지입니다:\n");
+        int matchingIndeices[5] = { 0 };
+        int searchResultIndices[5] = { 0 };
+        int searchResultCount = 0;
         for (int i = 0; i < matchingCount; ++i) {
-            printf("%d. ", i + 1);
-            showTravel(&travel[matchingIndices[i]]);
+            if (strstr(travel[matchingIndices[i]].name, searchQuery) != NULL ||
+                strstr(travel[matchingIndices[i]].location, searchQuery) != NULL ||
+                checkMatch(&searchQuery, &travel[matchingIndices[i]]) > 0) {
+                searchResultIndices[searchResultCount] = matchingIndices[i];
+                searchResultCount++;
+            }
         }
 
+        sortAverageRating(travel, searchResultCount);
+
+        printf("\n평균 평점 기준으로 정렬된 여행지입니다:\n");
+        for (int i = 0; i < searchResultCount; ++i) {
+            printf("%d. ", i + 1);
+            showTravel(&travel[searchResultIndices[i]]);
+        }
         // 선택 메뉴
         int choice;
         printf("\n어떤 작업을 수행하시겠습니까?\n");
@@ -152,17 +188,20 @@ void inputRatingAndComment(struct Travel* travel, int travelCount, int matchingI
 
     printf("평점을 입력하세요 (0~5): ");
     int newRating;
-    if (scanf_s("%d", &newRating) != 1) {
+    if (scanf_s("%d", &newRating) != 1 || (newRating < 0 || newRating > 5)) {
         printf("잘못된 입력입니다.\n");
         return;
     }
 
     int totalRatings = travel[matchingIndices[choice - 1]].rating * travel[matchingIndices[choice - 1]].numReviews;
-    totalRatings += newRating;
-    travel[matchingIndices[choice - 1]].numReviews++;
-    travel[matchingIndices[choice - 1]].rating = totalRatings / travel[matchingIndices[choice - 1]].numReviews;
+    int numReviews = travel[matchingIndices[choice - 1]].numReviews;
 
-    printf("평균 평점: %d\n", travel[matchingIndices[choice - 1]].rating);
+    totalRatings += newRating;
+    numReviews++;
+    double averageRating = (double)totalRatings / numReviews;
+
+    travel[matchingIndices[choice - 1]].numReviews = numReviews;
+    travel[matchingIndices[choice - 1]].rating = averageRating;
 
     printf("코멘트를 입력하세요: ");
     if (scanf_s(" %[^\n]s", travel[matchingIndices[choice - 1]].comment, sizeof(travel[matchingIndices[choice - 1]].comment)) != 1) {
@@ -172,3 +211,4 @@ void inputRatingAndComment(struct Travel* travel, int travelCount, int matchingI
 
     printf("입력이 완료되었습니다.\n");
 }
+
