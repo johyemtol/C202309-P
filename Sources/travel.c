@@ -2,7 +2,7 @@
 #include <string.h>
 
 
-
+//사용자에게 보여주는 함수
 void showTravel(const struct Travel* travel) {
     printf("여행지 \n");
     printf("이름: %s\n", travel->name);
@@ -20,6 +20,7 @@ void showTravel(const struct Travel* travel) {
     printf("\n");
 }
 
+//검색할때 맞는지 체크하기
 int checkMatch(const char(*userPreferences)[50], const struct Travel* travel) {
     int matchCount = 0;
 
@@ -36,7 +37,7 @@ int checkMatch(const char(*userPreferences)[50], const struct Travel* travel) {
 }
 
 
-
+//여행지 찾기 부분 함수
 void searchTravel(const char* searchQuery, struct Travel* travelList, int listSize, int matchingIndices[], int* matchingCount) {
     *matchingCount = 0;
     for (int i = 0; i < listSize; ++i) {
@@ -49,6 +50,7 @@ void searchTravel(const char* searchQuery, struct Travel* travelList, int listSi
     }
 }
 
+//평균 평점 계산하는 함수
 double calculateAverageRating(const struct Travel* travel) {
     if (travel->numReviews == 0) {
         return 0.0;
@@ -57,7 +59,7 @@ double calculateAverageRating(const struct Travel* travel) {
 }
 
 
-
+//평균평점 정렬하는 함수
 void sortAverageRating(struct Travel* travelList, int listSize) {
     for (int i = 0; i < listSize - 1; ++i) {
         for (int j = i + 1; j < listSize; ++j) {
@@ -73,6 +75,7 @@ void sortAverageRating(struct Travel* travelList, int listSize) {
     }
 }
 
+//여행지평점 정렬함수
 void sortTravelRating(struct Travel* travelList, int listSize) {
     for (int i = 0; i < listSize - 1; ++i) {
         for (int j = i + 1; j < listSize; ++j) {
@@ -88,6 +91,7 @@ void sortTravelRating(struct Travel* travelList, int listSize) {
     }
 }
 
+//주 실행 함수 
 void performSearch(struct Travel* travel, int travelCount) {
     printf("검색어를 입력하세요(도시나 나라 대륙 이름을 입력하시오): ");
     char searchQuery[50];
@@ -135,7 +139,7 @@ void performSearch(struct Travel* travel, int travelCount) {
             inputRatingAndComment(travel, travelCount, matchingIndices, matchingCount);
             break;
         case 3:
-            performSearch(travel, travelCount);  // 다시 검색
+            performSearch(travel, travelCount);  
             break;
         case 4:
             printf("프로그램을 종료합니다.\n");
@@ -150,6 +154,7 @@ void performSearch(struct Travel* travel, int travelCount) {
     }
 }
 
+//여행지 선택후 연결해줄지 말지 출력하는 함수
 void selectTravel(struct Travel* travel, int travelCount, int matchingIndices[], int matchingCount) {
     int choice;
     printf("\n어떤 여행지를 선택하시겠습니까? (번호로 선택하시오): ");
@@ -178,6 +183,8 @@ void selectTravel(struct Travel* travel, int travelCount, int matchingIndices[],
     }
 }
 
+
+//평균과 코멘트 입력하는 함수
 void inputRatingAndComment(struct Travel* travel, int travelCount, int matchingIndices[], int matchingCount) {
     int choice;
     printf("\n평점과 코멘트를 입력할 여행지를 선택하세요 (번호로 선택하시오): ");
